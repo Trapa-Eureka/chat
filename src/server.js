@@ -18,16 +18,17 @@ const wss = new WebSocket.Server({ server });
 function onSocketClose() {
     console.log("disconnected from the browser"); // 웹소켓 연결이 끊어졌을 때 콘솔에 출력
 }
-function onSocketMessage(message) {
-    console.log(message.toString()); // 웹소켓으로 부터 메세지가 왔을 때 콘솔에 출력
-}
+
+const sockets = [];
 
 // socket : 연결된 브라우저
 wss.on("connection", (socket) => {
+    sockets.push(socket); // 다른 브라우저가 연결 되었을때 해당 브라우저를 이 array에 추가(넣는다.) 때문에 받은 메세지를 다른 모든 socket에 전달해 줄 수 있음
     console.log("connected with browser");
     socket.on("close", onSocketClose);
-    socket.on("message", onSocketMessage);
-    socket.send("hello!");
+    socket.on("message", (message) => { // 웹소켓으로 부터 메세지가 왔을 때 출력
+        sockets.forEach(aSocket => aSocket.send(message.toString()));
+    });
 });
 
 server.listen(3000, handleListen);

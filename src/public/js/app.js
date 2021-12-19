@@ -1,3 +1,5 @@
+const messageList = document.querySelector('ul');
+const messageForm = document.querySelector('form');
 // 어디에 있는지 알려주는 것 (같은 url)
 // app.js socket : 서버로의 연결
 const socket = new WebSocket(`ws://${window.location.host}`);
@@ -16,6 +18,16 @@ function handleDisconnect() {
 socket.addEventListener("open", handleOpen);
 socket.addEventListener("message", handleMessage);
 socket.addEventListener("close", handleDisconnect);
-setTimeout(() => {
-    socket.send("hello from the browser");
-}, 10000);
+
+function handleSubmit(event) {
+    event.preventDefault();
+    const input = messageForm.querySelector("input");
+    socket.send(input.value);
+    input.value = "";
+    // const input = event.target.querySelector('input');
+    // const value = input.value;
+    // input.value = "";
+    // socket.send(value);
+}
+
+messageForm.addEventListener("submit", handleSubmit);
