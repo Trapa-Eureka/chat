@@ -28,6 +28,7 @@ socket.addEventListener("open", handleOpen);
 socket.addEventListener("message", handleMessage);
 socket.addEventListener("close", handleDisconnect);
 
+// chat으로 보내지는 이벤트
 function handleSubmit(event) {
     event.preventDefault();
     const input = messageForm.querySelector("input");
@@ -35,10 +36,12 @@ function handleSubmit(event) {
     input.value = "";
 }
 
+// nickname 설정시 이벤트
 function handleNickSubmit(event) {
     event.preventDefault();
     const input = nickForm.querySelector("input");
     socket.send(makeMessage("nickname", input.value));
+    input.value = "";
 }
 
 messageForm.addEventListener("submit", handleSubmit);

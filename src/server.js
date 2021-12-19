@@ -24,10 +24,19 @@ const sockets = [];
 // socket : 연결된 브라우저
 wss.on("connection", (socket) => {
     sockets.push(socket); // 다른 브라우저가 연결 되었을때 해당 브라우저를 이 array에 추가(넣는다.) 때문에 받은 메세지를 다른 모든 socket에 전달해 줄 수 있음
+    socket["nickname"] = "Unknown"; // nickname이 없을때 
     console.log("connected with browser");
     socket.on("close", onSocketClose);
-    socket.on("message", (message) => { // 웹소켓으로 부터 메세지가 왔을 때 출력
-        sockets.forEach(aSocket => aSocket.send(message.toString()));
+    socket.on("message", (msg) => { // 웹소켓으로 부터 메세지가 왔을 때 출력
+        const message = JSON.parse(msg);
+        switch (message.type) {
+            case "new_message":
+                sockets.forEach(aSocket => 
+                    aSocket.send(`${socket.nickname}: ${message.payload}`)
+                );
+            case "nickname":
+                socket["nickname"] = message.payload;
+        }
     });
 });
 
