@@ -15,11 +15,19 @@ const handleListen = () => console.log("Listening on port 3000");
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
-// socket : 연결된 브라우저
-function handleConnection(socket) {
-    console.log(socket);
+function onSocketClose() {
+    console.log("disconnected from the browser"); // 웹소켓 연결이 끊어졌을 때 콘솔에 출력
+}
+function onSocketMessage(message) {
+    console.log(message.toString()); // 웹소켓으로 부터 메세지가 왔을 때 콘솔에 출력
 }
 
-wss.on("connection", handleConnection);
+// socket : 연결된 브라우저
+wss.on("connection", (socket) => {
+    console.log("connected with browser");
+    socket.on("close", onSocketClose);
+    socket.on("message", onSocketMessage);
+    socket.send("hello!");
+});
 
 server.listen(3000, handleListen);
